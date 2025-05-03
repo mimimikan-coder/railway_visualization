@@ -1,0 +1,25 @@
+100回シミュによる遅延回数Top10駅
+['Xianningbei Railway Station',
+ 'Langfang Railway Station',
+  'Taian Railway Station', 
+  'Wulongbeidong Railway Station',
+   'Qishan Railway Station',
+    'Qiqihaernan Railway Station', 
+    'Sipingdong Railway Station', 
+    'Fuyuanbei Railway Station', 
+    'Shanhaiguan Railway Station', 
+    'Zhengdingjichang Railway Station']
+こいつは結構バラつくので↓のがいい？
+
+
+中心性のスコアによる中心駅Top10
+164        Xianbei Railway Station           0.032659                0.091101
+25      Beijingnan Railway Station           0.018663                0.119662
+5     Guangzhounan Railway Station           0.038880                0.124709
+22    Hangzhoudong Railway Station           0.052877                0.125099
+65     Shenyangbei Railway Station           0.049767                0.164241
+39      Xuzhoudong Railway Station           0.034215                0.159373
+19      Nanchangxi Railway Station           0.037325                0.200548
+32      Nanjingnan Railway Station           0.055988                0.208029
+93   Zhengzhoudong Railway Station           0.060653                0.284203
+2      Changshanan Railway Station           0.052877                0.326650

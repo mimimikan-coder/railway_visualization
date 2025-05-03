@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Highspeed Railway visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- content -->
+    <h1>SIMULATION VISUALIZATION</h1>
+    <canvas id="myChart" width="400" height="200"></canvas>
+    <hr>
+    <button id="runSimulation">run simulation and list late 10 stations</button>
+    <ul id="resultList"></ul>
+    <button id="SIRwithImmunity" disabled>Run SIR simulation with above 10 stations</button>
+    <button id="optimalImmunity">Run SIR simulation with best immunity nodes</button>
+
+    <script>
+        let top10Nodes = [];
+        let chart = null;
+
+        // グラフ描画
+        fetch("http://localhost:5000/simulation")
+            .then(response => response.json())
+            .then(data =>{
+                console.log(data);
+
+                const ctx = document.getElementById("myChart").getContext("2d");
+                // ↓の変数のスコープは？　他の関数とかフェッチからアクセスできる？
+                chart = new Chart(ctx, {
+                    type: "line",
+                    data: {
+                        labels: data.steps,
+                        datasets: [{
+                            label: "no immunity",
+                            data: data.infected,
+                            borderColor: "rgba(255, 99, 132, 1)",
+                            backgroundColor: "rgba(255, 99, 132, 0.2)",
+                            borderWidth: 2,
+                            fill: false
+                        },
+                    {
+                        label: "with immunity",
+                        data: data.infected_immunity,
+                        borderColor: "rgba(54, 162, 235, 1)",
+                        backgroundColor: "rgba(54, 162, 235, 0.2)",
+                        borderWidth: 2,
+                        fill: false
+                    },
+                    {
+                        label: "sis infected",
+                        data: data.infected_sis,
+                        borderColor: "rgba(25, 250, 100, 1)",
+                        backgroundColor: "rgba(25, 250, 100, 0.2)",
+                        borderWidth: 2,
+                        fill: false
+                    }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins:{
+                            title:{
+                                display: true,
+                                text: "no/with immunity simulation"
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                })
+            })
+            .catch(error => console.error("Error fetching data", error));
+
+        // 多数回シミュレーションによる遅延TOP10駅のリスト表示 OK
+        document.getElementById("runSimulation").addEventListener("click", () => {
+            fetch("http://localhost:5000/simulation/multiple_simulation")
+                .then(response => response.json())
+                .then(data => {
+                    const resultList = document.getElementById("resultList");
+                    resultList.innerHTML = "";
+
+                    top10Nodes = data.top10_nodes;
+                    top10Nodes.forEach((station, index) => {
+                        const li = document.createElement("li");
+                        li.textContent = `${index + 1}.${station}`;
+                        resultList.appendChild(li);
+                    });
+                    document.getElementById("SIRwithImmunity").disabled = false;
+                });
+                //.catch(error => console.error("Error running simulation: ", error));
+                
+        });
+
+        // シミュで得た遅延駅を免疫にしてシミュ実行
+        document.getElementById("SIRwithImmunity").addEventListener("click", () =>{
+            fetch("http://localhost:5000/simulation/SIRwith_immunity", {
+                method:"POST",
+                headers:{"Content-Type": "application/json"},
+                body: JSON.stringify({immune_nodes:top10Nodes})
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateChart(data.infected_counts, "simulation with TOP10 station");
+            });
+            alert("clicked");
+        });
+
+        // 最尤ノードでシミュ
+        document.getElementById("optimalImmunity").addEventListener("click", () => {
+            fetch("http://localhost:5000/simulation/optimal_immunity")
+            .then(resopnse => response.json())
+            .then(data => {
+                updateChart(data.infected_count, "best immunity nodes");
+                console.log("best nodes:", data.best_nodes);
+            });
+        });
+
+        // グラフ更新関数
+        function updateChart(infectedCounts, title) {
+            if (!chart) {
+                console.error("not exist");
+                return;
+            }
+            chart.data.datasets.push({
+                label: title,
+                data: infectedCounts,
+                borderColor: "rgba(100, 25, 24, 1)",
+                borderWidth: 2,
+                backgroundColor: "rgba(100, 25, 24, 0.2)",
+                fill: false
+            });
+            chart.update();
+        }
+
+
+    </script>
+</body>
+</html>
+

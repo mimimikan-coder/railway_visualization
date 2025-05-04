@@ -107,21 +107,34 @@
             .then(data => {
                 updateChart(data.infected_counts, "simulation with TOP10 station");
             });
-            alert("clicked");
         });
 
         // 最尤ノードでシミュ
         document.getElementById("optimalImmunity").addEventListener("click", () => {
-            fetch("http://localhost:5000/simulation/optimal_immunity")
-            .then(resopnse => response.json())
+            console.log("clicked");
+
+            fetch("http://localhost:5000/simulation/best_node")
+            .then(response => response.json())
             .then(data => {
-                updateChart(data.infected_count, "best immunity nodes");
-                console.log("best nodes:", data.best_nodes);
-            });
+                const best_nodes = data.best_nodes;
+                console.log("Best nodes:", best_nodes);
+
+                return fetch("http://localhost:5000/simulation/optimal_immunity", {
+                    method:"POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({bests: best_nodes})
+                });
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("simulation data:", data);
+                updateChart(data.infected_count, "simulation with best nodes", c="rgba(10, 200, 180, 1)", bgc="rgba(10, 200, 180, 0.2)");
+                document.getElementById("optimalImmunity").disabled = true;
+            })
         });
 
         // グラフ更新関数
-        function updateChart(infectedCounts, title) {
+        function updateChart(infectedCounts, title, c="rgba(100, 25, 24, 1)", bgc="rgba(100, 25, 24, 0.2)") {
             if (!chart) {
                 console.error("not exist");
                 return;
@@ -129,9 +142,9 @@
             chart.data.datasets.push({
                 label: title,
                 data: infectedCounts,
-                borderColor: "rgba(100, 25, 24, 1)",
+                borderColor: c,
                 borderWidth: 2,
-                backgroundColor: "rgba(100, 25, 24, 0.2)",
+                backgroundColor: bgc,
                 fill: false
             });
             chart.update();

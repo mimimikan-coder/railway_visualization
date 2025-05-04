@@ -89,17 +89,24 @@ def run_SIRwith_immunity():
         "infected_counts": infected_countA
     })
 
-@app.route("/simulation/optimal_immunity")
-def run_optimal_simulation():
-    best_nodes = select_nodes(g, initial_infected=[initial_station], candidate_nodes=list(g.nodes), k=10, trials=20, steps=50)
-    history_best_nodes = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=best_nodes, steps=50)
-
-    count_best_nodes = infected_count(history_best_nodes)
+@app.route("/simulation/best_node")
+def get_best_node():
+    best_nodes = select_nodes(g, initial_infected=[initial_station], candidate_nodes=list(g.nodes), k=10, trials=5, steps=20)
 
     return jsonify({
-        "best_nodes": best_nodes,
-        "infected_count": count_best_nodes
+        "best_nodes": best_nodes
     })
+
+@app.route("/simulation/optimal_immunity", methods=["POST"])
+def run_optimal_simulation():
+    nodes = request.json.get("bests", [])
+    res = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=nodes, steps=50)
+    
+    count = infected_count(res)
+    return jsonify({
+        "infected_count": count
+    })
+
 
 if __name__ == "__main__":      # localhost 5000
     app.run(debug=True)

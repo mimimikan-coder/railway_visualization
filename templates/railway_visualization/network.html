@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        #controls {
+            margin-top: 10px;
+        }
+        .legend {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-box {
+            width: 15px;
+            height: 15px;
+            border: 1px solid #000;
+        }
+    </style>
+    <title>Network Animation</title>
+</head>
+<body>
+    <h1>SIR Simulation</h1>
+    <svg id="network" width="1000" height="700"></svg>
+
+    <div id="controls">
+        <button id="start">▶️ Start</button>
+        <button id="pause">⏸️ Pause</button>
+        <label >
+            step:
+            <input type="range" id="stepSlider" min="0" max="0" value="0">
+            <span id="stepLabel">0</span>
+        </label>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-box" style="background-color: #aaa"></div>S</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: red"></div>I</div>
+        <div class="legend-item"><div class="legend-box" style="background-color: green"></div>R</div>
+    </div>
+
+    <script src="{{ url_for('static', filename='network.js') }}"></script>
+</body>
+</html>

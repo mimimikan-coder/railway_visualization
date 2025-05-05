@@ -4,6 +4,7 @@ import os
 import pandas as pd
 import networkx as nx
 from simulation.simulate import *
+import json
 #from network.network_analyze import calcAllCentrality
 
 # read CSV
@@ -68,17 +69,6 @@ def run_multiple_sim():
         "top10_nodes": top10_nodes
     })
 
-@app.route("/simulation/centrality_simulation")
-def run_centrality_simulation():
-    
-    """
-    Write here!!
-    遅延TOP10を利用してSIRシミュ実行
-    ↑が出力されているときに限り動くようにしたい
-    """
-
-    return True
-
 @app.route("/simulation/SIRwith_immunity", methods=["POST"])
 def run_SIRwith_immunity():
     nodes = request.json.get("immune_nodes", [])
@@ -107,6 +97,15 @@ def run_optimal_simulation():
         "infected_count": count
     })
 
+@app.route("/network-animation")
+def animation_home():
+    return render_template("railway_visualization/network.html")
+
+@app.route("/network-data")
+def network_data():
+    with open ("data/network_data.json") as f:
+        data = json.load(f)
+    return jsonify(data)
 
 if __name__ == "__main__":      # localhost 5000
     app.run(debug=True)

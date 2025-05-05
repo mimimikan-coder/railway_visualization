@@ -4,6 +4,7 @@ import numpy as np
 import os
 from pyvis.network import Network
 from collections import defaultdict
+import json
 
 def calcDegreeCentrality(G):
     deg_dict = nx.degree_centrality(G)
@@ -87,6 +88,41 @@ def SIR_simulation(G, initial_infected, immune_nodes, steps=50, beta=0.3, gamma=
         history.append(infected.copy())
 
     return history    
+
+def SIR_simulation_network(G, initial_infected, immune_nodes, steps=50, beta=0.3, gamma=0.1):
+    infected = {}
+    for node in G.nodes:
+        if node in immune_nodes:
+            infected[node] = "R"
+        else:
+            infected[node] = "S"
+
+    for node in initial_infected:
+        if node not in immune_nodes:
+            infected[node] = "I"
+
+    history = []
+    for step in range(steps):
+        new_infected = infected.copy()
+        for node in G.nodes:
+            if infected[node] == "I":
+                for neighbor in G.neighbors(node):
+                    if infected[neighbor] == "S" and np.random.rand() < beta:
+                        new_infected[neighbor] = "I"
+                if np.random.rand() < gamma:
+                    new_infected[node] = "R"
+
+        infected = new_infected
+        history.append(infected.copy())
+
+    data = {
+        "nodes": [{"id": str(n)} for n in G.nodes()],
+        "links": [{"source": str(u), "target": str(v)} for u, v in G.edges()],
+        "history": history
+    }
+    with open("data/network_data.json", "w") as f:
+        json.dump(data, f)
+
 
 def multiple_sim(G, initial_infected, immune_nodes=[], beta=0.3, gamma=0.1, steps=50, trials=100):
     infection_count = defaultdict(int)

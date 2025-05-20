@@ -16,27 +16,6 @@ delay_data = pd.read_csv(del_path)
 junction_data = pd.read_csv(junc_path)
 distance_data = pd.read_csv(dis_path)
 
-#print(distance_data.dtypes)
-
-# operation
-#date,train_number,train_direction,station_name,station_order
-#scheduled_arrival_time,scheduled_departure_time,stop_time
-#actual_arrival_time,actual_departure_time,arrival_delay,departure_delay
-#wind,weather,temperature,major_holiday
-
-# junction
-# station_name,province,city,distric
-# up_number,down_number,up_arrival_delay_number
-# down_arrival_delay_number,up_departure_delay_number,down_depature_delay_number
-
-# delay
-# station_name,station_type,province,city,district
-# start_time,end_time,up_arrival_delay_number,down_arrival_delay_number,up_departure_delay_number,down_depature_delay_number
-# wind,weather,temperature,major_holiday
-
-# distance
-# from_station,to_station,mileage,train_direction
-
 operation_data["scheduled_arrival_time"] = pd.to_datetime(operation_data["scheduled_arrival_time"], errors="coerce")
 operation_data["scheduled_departure_time"] = pd.to_datetime(operation_data["scheduled_departure_time"])
 

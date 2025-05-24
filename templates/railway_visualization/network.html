@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         #controls {
             margin-top: 10px;
@@ -45,6 +46,8 @@
         <div class="legend-item"><div class="legend-box" style="background-color: red"></div>I</div>
         <div class="legend-item"><div class="legend-box" style="background-color: green"></div>R</div>
     </div>
+
+    <canvas id="centralityChart" width="400" height="400"></canvas>
 
     <script src="{{ url_for('static', filename='network.js') }}"></script>
 </body>

@@ -5,7 +5,6 @@ import pandas as pd
 import networkx as nx
 from simulation.simulate import *
 import json
-#from network.network_analyze import calcAllCentrality
 
 # read CSV
 script_dir = os.path.dirname(__file__)
@@ -52,6 +51,27 @@ CORS(app)
 def home():
     return render_template("railway_visualization/index.html")
 
+# draw network graphs
+@app.route("/network")
+def network():
+    data = get_graph_data(g)
+    return jsonify(data)
+
+@app.route("/network-parameter")
+def network_parameter():
+    a, d, c = calc_parameter(g)
+    data = {
+        "avarage_path_length": a,
+        "density": d,
+        "clustering_coef": c
+    }
+    return jsonify(data)
+
+@app.route("/network-graph")
+def network_graph():
+    return render_template("railway_visualization/graph.html")
+
+# simulation modules
 @app.route("/simulation")
 def get_simulation_data():
     data = {
@@ -110,17 +130,9 @@ def network_data():
 if __name__ == "__main__":      # localhost 5000
     app.run(debug=True)
 
-# 関数ファイルを追加してインポート　ここでページごとのビューを設定
-# 実行時はserver.py
-# 終わったらやること　　Flaskでフロントエンドとつなげる　リアルタイム可視化　拡散マップ（ネットワーク図アニメーション）
-# 全部のデータできたらWeb側に持って行くが 最終的にどういう形？
-
-# 各変数のモジュール化　app.pyから呼び出せるようにする
-# 各データをブラウザ上でリアルタイムに？見れるようにする
-# Pythonでデータ用意してHTMLに渡す。グラフ等の描画はHTML側で行う
-
 # 最尤ノードの選択　貪欲法　中心性の視覚化(統計図)　遅延駅10駅(毎度計算？)＋最尤10駅のリスト表示
-
+# シミュのアニメーション画面でどのノードを初期感染点にするかを選べるようにする
+# 遅延駅、未遅延駅のタイムステップごとのグラフを横(下)に表示
 
 """
 中心性、平均パス長などの表示→レポート作成、社団構造の可視化

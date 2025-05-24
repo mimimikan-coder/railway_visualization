@@ -1,0 +1,121 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #F5F7FA;
+    color: #1E3A8A;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1,
+h2,
+h3 {
+    color: #1E3A8A;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+h2 {
+    font-size: 1.8rem;
+    border-bottom: 2px solid #3B82F6;
+    padding-bottom: 0.5rem;
+}
+
+h3 {
+    font-size: 1.4rem;
+}
+
+#network-parameter {
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+    transition: transform 0.3s ease;
+}
+
+#network-parameter:hover {
+    transform: translateY(-5px);
+}
+
+#network-parameter table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#network-parameter th,
+#network-parameter td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+#network-parameter th {
+    background: #3B82F6;
+    color: #FFFFFF;
+    font-weight: 500;
+    border-radius: 8px 8px 0 0;
+}
+
+#network-parameter td {
+    color: #1E3A8A;
+}
+
+#network-parameter tr:last-child td {
+    border-bottom: none;
+}
+
+#network-parameter tr:hover {
+    background: #BFDBFE;
+}
+
+#graph,
+#graph-degree {
+    width: 100%;
+    height: 600px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    padding: 10px;
+}
+
+.plotly-graph-div {
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    h3 {
+        font-size: 1.2rem;
+    }
+
+    #network-parameter {
+        padding: 15px;
+    }
+
+    #network-parameter th,
+    #network-parameter td {
+        padding: 8px;
+        font-size: 0.9rem;
+    }
+
+    #graph,
+    #graph-degree {
+        height: 400px;
+    }
+}

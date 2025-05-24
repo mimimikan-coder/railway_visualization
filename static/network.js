@@ -81,3 +81,44 @@ fetch('/network-data')
     };
     update(0);
 });
+
+d3.json("/data/centrality_nodes.json").then(data => {
+  const svg = d3.select("svg");
+
+  const scaleRadius = d3.scaleLinear()
+    .domain(d3.extent(data.nodes, d => d.centrality))
+    .range([4, 20]); 
+
+  const scaleColor = d3.scaleSequential(d3.interpolateOrRd)
+    .domain(d3.extent(data.nodes, d => d.centrality));
+
+  const nodes = svg.selectAll("circle")
+    .data(data.nodes)
+    .enter().append("circle")
+    .attr("cx", d => d.x)
+    .attr("cy", d => d.y)
+    .attr("r", d => scaleRadius(d.centrality))
+    .attr("fill", d => scaleColor(d.centrality));
+
+  nodes.append("title")
+    .text(d => `${d.name} (${d.centrality.toFixed(4)})`);
+});
+
+
+const top10 = data.nodes
+  .sort((a, b) => b.centrality - a.centrality)
+  .slice(0, 10);
+
+const labels = top10.map(d => d.name);
+const scores = top10.map(d => d.centrality);
+
+new Chart(ctx, {
+  type: "bar",
+  data: {
+    labels: labels,
+    datasets: [{
+      label: "centrality score",
+      data: scores
+    }]
+  }
+});

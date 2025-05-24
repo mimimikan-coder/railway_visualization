@@ -1,3 +1,5 @@
+# function liblary
+
 import pandas as pd
 import networkx as nx
 import numpy as np
@@ -5,6 +7,61 @@ import os
 from pyvis.network import Network
 from collections import defaultdict
 import json
+import matplotlib.colors as mcolors
+from networkx.algorithms.community import greedy_modularity_communities
+
+def calc_parameter(G):
+    avg_path_length = nx.average_shortest_path_length(G)
+    density = nx.density(G)
+    clustering_coeff = nx.average_clustering(G)
+
+    return avg_path_length, density, clustering_coeff
+
+def get_graph_data(G):
+    communities = list(greedy_modularity_communities(G))
+    print(f"Num of Community: {len(communities)}")
+
+    pos = nx.spring_layout(G, seed=42)
+    pos = {node: (x, y*1.5) for node, (x, y) in pos.items()}
+
+    degree_dict = dict(G.degree())
+    threshold = sorted(degree_dict.values(), reverse=True)[int(len(degree_dict) * 0.1)] 
+    labels = {node: node for node, degree in degree_dict.items() if degree >= threshold}
+
+    colors = list(mcolors.TABLEAU_COLORS.values())
+    for i, comm in enumerate(communities):
+        nx.draw_networkx_nodes(G, pos, nodelist=list(comm), node_color=colors[i % len(colors)], label=f"Community {i+1}")
+
+    nodes = []
+    colors = list(mcolors.TABLEAU_COLORS.values())
+    for node in G.nodes():
+        comm_id = next((i for i, comm in enumerate(communities) if node in comm), -1)
+        nodes.append({
+            "id": node,
+            "x": pos[node][0],
+            "y": pos[node][1],
+            "color": colors[comm_id % len(colors)] if comm_id != -1 else "#888",
+            "label": node if degree_dict[node] >= threshold else "",  
+            "degree": degree_dict[node]
+        })
+
+    edges = [{"source": u, "target": v, "weight": G[u][v]["weight"]} for u, v in G.edges()]
+
+    degrees = list(degree_dict.values())
+    degree_counts = np.bincount(degrees)
+    degree_distribution = [
+        {"degree": k, "count": int(count)}
+        for k, count in enumerate(degree_counts)
+        if count > 0
+    ]
+
+    return {
+        "nodes": nodes, 
+        "edges": edges, 
+        "num_communities": len(communities), 
+        "graph_id":"Network Graph", 
+        "degree_distribution": degree_distribution
+    }
 
 def calcDegreeCentrality(G):
     deg_dict = nx.degree_centrality(G)
@@ -41,6 +98,7 @@ def SIS_simulation(G, initial_infected, steps=50, beta=0.3, gamma=0.1):
     infected = {node: "S" for node in G.nodes}
     infected[initial_infected] = "I"
 
+    layout = nx.spring_layout(G, seed=42)
     history = []
     for step in range(steps):
         new_infected = infected.copy()
@@ -73,6 +131,7 @@ def SIR_simulation(G, initial_infected, immune_nodes, steps=50, beta=0.3, gamma=
         if node not in immune_nodes:
             infected[node] = "I"
 
+    layout = nx.spring_layout(G, seed=42)
     history = []
     for step in range(steps):
         new_infected = infected.copy()
@@ -101,6 +160,7 @@ def SIR_simulation_network(G, initial_infected, immune_nodes, steps=50, beta=0.3
         if node not in immune_nodes:
             infected[node] = "I"
 
+    layout = nx.spring_layout(G, seed=42)
     history = []
     for step in range(steps):
         new_infected = infected.copy()

@@ -96,7 +96,9 @@ def calcAllCentrality(G):
 
 def SIS_simulation(G, initial_infected, steps=50, beta=0.3, gamma=0.1):
     infected = {node: "S" for node in G.nodes}
-    infected[initial_infected] = "I"
+    
+    for node in initial_infected:
+        infected[node] = "I"
 
     layout = nx.spring_layout(G, seed=42)
     history = []
@@ -116,8 +118,28 @@ def SIS_simulation(G, initial_infected, steps=50, beta=0.3, gamma=0.1):
         infected = new_infected.copy()
         history.append(infected)
 
-    return history
+    nodes = []
+    for node in G.nodes():
+        x, y = layout[node]
+        history_list = [state[node] for state in history]
+        name = node
+        nodes.append({
+            "id":node,
+            "name": name,
+            "x": float(x)*800+400,
+            "y": float(y)*800+300,
+            "history": history_list
+        })
+    links = [
+        {"source": str(u), "target": str(v)}
+        for u, v in G.edges()
+    ]
+    result = {
+        "nodes": nodes,
+        "links": links
+    }
 
+    return result    
 
 def SIR_simulation(G, initial_infected, immune_nodes, steps=50, beta=0.3, gamma=0.1):
     infected = {}
@@ -146,7 +168,28 @@ def SIR_simulation(G, initial_infected, immune_nodes, steps=50, beta=0.3, gamma=
         infected = new_infected
         history.append(infected.copy())
 
-    return history    
+    nodes = []
+    for node in G.nodes():
+        x, y = layout[node]
+        history_list = [state[node] for state in history]
+        name = node
+        nodes.append({
+            "id":node,
+            "name": name,
+            "x": float(x)*800+400,
+            "y": float(y)*800+300,
+            "history": history_list
+        })
+    links = [
+        {"source": str(u), "target": str(v)}
+        for u, v in G.edges()
+    ]
+    result = {
+        "nodes": nodes,
+        "links": links
+    }
+
+    return result    
 
 def SIR_simulation_network(G, initial_infected, immune_nodes, steps=50, beta=0.3, gamma=0.1):
     infected = {}

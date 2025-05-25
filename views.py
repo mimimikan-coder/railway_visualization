@@ -36,13 +36,13 @@ initial_station = 'Yimianpobei Railway Station'
 
 top10 =  list(top10_data.sort_values("score", ascending=False).head(10))
 
-sis_history = SIS_simulation(g, initial_station)
-history = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=[])
-history_immunity = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=top10)
+# sis_history = SIS_simulation(g, initial_station)
+# history = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=[])
+# history_immunity = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=top10)
 
-sis_infected = infected_count(sis_history)
-infected = infected_count(history)
-infected_immunity = infected_count(history_immunity)
+# sis_infected = infected_count(sis_history)
+# infected = infected_count(history)
+# infected_immunity = infected_count(history_immunity)
 
 app = Flask(__name__)
 CORS(app)
@@ -117,6 +117,7 @@ def run_optimal_simulation():
         "infected_count": count
     })
 
+# network.html
 @app.route("/network-animation")
 def animation_home():
     return render_template("railway_visualization/network.html")
@@ -126,6 +127,30 @@ def network_data():
     with open ("data/network_data.json") as f:
         data = json.load(f)
     return jsonify(data)
+
+@app.route("/network/simulation", methods=["POST"])
+def network_simulation():
+    req = request.get_json()
+    model = req.get("model")
+    source = req.get("source")
+
+    print(source)
+    if not g.has_node(source):
+        return jsonify({"error": "node not found"})
+    
+    if model == "SIR":
+        result = SIR_simulation(g, initial_infected=[source], immune_nodes=[])
+    elif model == "SIS":
+        result = SIS_simulation(g, initial_infected=[source])
+    
+    print(result["links"][:10])
+    return jsonify(result)
+
+
+@app.route("/nodes")
+def nodes():
+    nodes = [{"id": node, "label":node} for node in g.nodes()]
+    return jsonify(nodes)
 
 if __name__ == "__main__":      # localhost 5000
     app.run(debug=True)

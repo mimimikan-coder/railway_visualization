@@ -1,124 +1,175 @@
-fetch('/network-data')
-.then(response => response.json())
-.then(data => {
-    const width = 2000, height = 2000;
-    const svg = d3.select("#network");
-    const colorMap = {"S": "#aaa", "I": "red", "R": "green"};
+document.getElementById("startSimulation").onclick = () => {
+  const model = document.getElementById("modelSelect").value;
+  const source = document.getElementById("node-select").value;
 
-    const simulation = d3.forceSimulation(data.nodes)
-        .force("link", d3.forceLink(data.links).id(d =>d.id).distance(40))
-        .force("charge", d3.forceManyBody().strength(-100))
-        .force("center", d3.forceCenter(width/2, height/2))
-        .force("collide", d3.forceCollide(10))
-        .alpha(1)
-        .alphaDecay(0.03);
-    const link = svg.append("g")
-        .selectAll("line")
-        .data(data.links)
-        .enter().append("circle")
-        .attr("r", 50)
-        .attr("fill", "#aaa");
-    const node = svg.append("g")
-        .selectAll("circle")
-        .data(data.nodes)
-        .enter().append("circle")
-        .attr("r", 50)
-        .attr("fill", "#aaa");
-    node.append("title").text(d => d.id);
-    simulation.on("tick", ()=>{
-        link
-            .attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
-        node
-            .attr("cx", d => d.x)
-            .attr("cy", d => d.y);
+  fetch("/network/simulation", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model: model,
+      source: source
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      drawNetworkAnimation(data);
     });
+};
 
+function drawNetworkAnimation(data) {
+  const svg = d3.select("#network");
+  svg.selectAll("*").remove();
+  const g = svg.append("g");
+
+  const colorMap = { S: "#aaa", I: "red", R: "green" };
+  const history = data.nodes[0].history.map((_, i) => {
+    const state = {};
     data.nodes.forEach(d => {
-        d.x = width / 2 + (Math.random() -0.5*100);
-        d.y = height / 2 + (Math.random() -0.5*100);
+      state[d.id] = d.history[i];
     });
+    return state;
+  });
 
-    svg.call(d3.zoom().on("zoom", function (event) {
-        svg.selectAll("g").attr("transform", event.transform);
-    }));
+  const stepLabel = document.getElementById("stepLabel");
+  const stepSlider = document.getElementById("stepSlider");
+  const maxStep = history.length;
+  stepSlider.max = maxStep - 1;
 
-    let step = 0;
-    const history = data.history;
-    let interval;
-    const stepLabel = document.getElementById("stepLabel");
-    const stepSlider = document.getElementById("stepSlider");
-    stepSlider.max = history.length - 1;
+  // const simulation = d3.forceSimulation(data.nodes)
+  //   .force("link", d3.forceLink(links).id(d => d.id).distance(40))
+  //   .force("charge", d3.forceManyBody().strength(-100))
+  //   .force("center", [400, 300])
+  //   .force("collide", d3.forceCollide(10))
+  //   .alpha(1)
+  //   .alphaDecay(0.03);
 
-    function update(stepIndex){
-        const state = history[stepIndex];
-        node.attr("fill", d => colorMap[state[d.id]]);
-        stepLabel.textContent = stepIndex;
-        stepSlider.value = stepIndex;
-    }
+  const link = g.selectAll("line")
+    .data(data.links)
+    .enter().append("line")
+    .attr("x1", d => data.nodes.find(n => n.id === d.source).x)
+    .attr("y1", d => data.nodes.find(n => n.id === d.source).y)
+    .attr("x2", d => data.nodes.find(n => n.id === d.target).x)
+    .attr("y2", d => data.nodes.find(n => n.id === d.target).y)
+    .attr("stroke", "#ccc");
 
-    document.getElementById("start").onclick = () => {
-        clearInterval(interval);
-        interval = setInterval(() => {
-            step++;
-            if (step >= history.length){
-                clearInterval(interval);
-                return;
-            }
-            update(step);
-        }, 800);
-    };
-
-    document.getElementById("pause").onclick = () => {
-        clearInterval(interval);
-    };
-
-    stepSlider.oninput = (e) => {
-        step = +e.target.value;
-        update(state);
-    };
-    update(0);
-});
-
-d3.json("/data/centrality_nodes.json").then(data => {
-  const svg = d3.select("svg");
-
-  const scaleRadius = d3.scaleLinear()
-    .domain(d3.extent(data.nodes, d => d.centrality))
-    .range([4, 20]); 
-
-  const scaleColor = d3.scaleSequential(d3.interpolateOrRd)
-    .domain(d3.extent(data.nodes, d => d.centrality));
-
-  const nodes = svg.selectAll("circle")
+  const node = g.selectAll("circle")
     .data(data.nodes)
     .enter().append("circle")
     .attr("cx", d => d.x)
     .attr("cy", d => d.y)
-    .attr("r", d => scaleRadius(d.centrality))
-    .attr("fill", d => scaleColor(d.centrality));
+    .attr("r", 2)
+    .attr("fill", d => colorMap[d.history[0]])
+    .call(d3.drag()
+      .on("start", (event, d) => {
+        d.fx = d.x;
+        d.fy = d.y;
+      })
+      .on("drag", (event, d) => {
+        d3.select(event.sourceEvent.target)
+          .attr("cx", d.x = event.x)
+          .attr("cy", d.y = event.y);
+      })
+      .on("end", (event, d) => {
+        d.fx = null;
+        d.fy = null;
+      })
+    );
 
-  nodes.append("title")
-    .text(d => `${d.name} (${d.centrality.toFixed(4)})`);
-});
+  svg.call(
+    d3.zoom()
+      .scaleExtent([0.5, 5])
+      .on("zoom", (event) => {
+        g.attr("transform", event.transform);
+      })
+  );
 
+  node.append("title").text(d => d.id);
 
-const top10 = data.nodes
-  .sort((a, b) => b.centrality - a.centrality)
-  .slice(0, 10);
+  // simulation.on("tick", () => {
+  //   link
+  //     .attr("x1", d => d.source.x)
+  //     .attr("y1", d => d.source.y)
+  //     .attr("x2", d => d.target.x)
+  //     .attr("y2", d => d.target.y);
+  //   node
+  //     .attr("cx", d => d.x)
+  //     .attr("cy", d => d.y);
+  // });
 
-const labels = top10.map(d => d.name);
-const scores = top10.map(d => d.centrality);
+  // svg.call(d3.zoom().on("zoom", function (event) {
+  //   svg.selectAll("g").attr("transform", event.transform);
+  // }));
 
-new Chart(ctx, {
-  type: "bar",
-  data: {
-    labels: labels,
-    datasets: [{
-      label: "centrality score",
-      data: scores
-    }]
+  let step = 0;
+  let interval;
+
+  function update(stepIndex) {
+    const state = history[stepIndex];
+    node.attr("fill", d => colorMap[state[d.id]]);
+    stepLabel.textContent = stepIndex;
+    stepSlider.value = stepIndex;
   }
+
+  document.getElementById("start").onclick = () => {
+    clearInterval(interval);
+    interval = setInterval(() => {
+      step++;
+      if (step >= history.length) {
+        clearInterval(interval);
+        return;
+      }
+      update(step);
+    }, 800);
+  };
+
+  document.getElementById("pause").onclick = () => {
+    clearInterval(interval);
+  };
+
+  stepSlider.oninput = (e) => {
+    step = +e.target.value;
+    update(step);
+  };
+
+  update(0);
+
+  // function dragstarted(event, d) {
+  //   if (!event.active) simulation.alphaTarget(0.3).restart();
+  //   d.fx = d.x;
+  //   d.fy = d.y;
+  // }
+
+  // function dragged(event, d) {
+  //   d.fx = event.x;
+  //   d.fy = event.y;
+  // }
+
+  // function dragended(event, d) {
+  //   if (!event.active) simulation.alphaTarget(0);
+  //   d.fx = null;
+  //   d.fy = null;
+  // }
+}
+
+fetch('/nodes')
+  .then(response => response.json())
+  .then(nodes => {
+    const select = document.getElementById('node-select');
+    nodes.forEach(node => {
+      const option = document.createElement('option');
+      option.value = node.id;
+      option.textContent = node.label;
+      select.appendChild(option);
+    });
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    document.getElementById('node-select').innerHTML = '<option>Error</option>';
+  });
+
+document.getElementById('node-select').addEventListener('change', (event) => {
+  const selectedNode = event.target.value;
+  document.getElementById('selected-node').textContent = selectedNode || 'None';
+  console.log('Selected:', selectedNode);
 });

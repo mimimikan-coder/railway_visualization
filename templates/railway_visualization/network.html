@@ -28,8 +28,24 @@
     <title>Network Animation</title>
 </head>
 <body>
-    <h1>SIR Simulation</h1>
-    <svg id="network" width="1000" height="700"></svg>
+    <h1>Simulation</h1>
+    <h3>simulation settings</h3>
+    <label>
+        <select id="modelSelect">
+            <option value="SIR">SIR</option>
+            <option value="SIS">SIS</option>
+        </select>
+    </label>
+    <label>
+        <div class="node-selector">
+            <label for="node-select">Select a Node:</label>
+            <select id="node-select">
+                <option value="">-- Select a Node --</option>
+            </select>
+            <p>Selected Node: <span id="selected-node">None</span></p>
+            <button id="startSimulation">Start Simulation</button>
+        </div>
+    </label>
 
     <div id="controls">
         <button id="start">▶️ Start</button>
@@ -40,6 +56,8 @@
             <span id="stepLabel">0</span>
         </label>
     </div>
+
+    <svg id="network" width="1000" height="700"></svg>
 
     <div class="legend">
         <div class="legend-item"><div class="legend-box" style="background-color: #aaa"></div>S</div>

@@ -32,17 +32,7 @@ delay_stations = delay_data["station_name"].unique().tolist()
 delay_info = operation_data.groupby("station_name")["arrival_delay"].mean().to_dict()
 nx.set_node_attributes(g, delay_info, "delay")
 
-initial_station = 'Yimianpobei Railway Station'
-
-top10 =  list(top10_data.sort_values("score", ascending=False).head(10))
-
-# sis_history = SIS_simulation(g, initial_station)
-# history = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=[])
-# history_immunity = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=top10)
-
-# sis_infected = infected_count(sis_history)
-# infected = infected_count(history)
-# infected_immunity = infected_count(history_immunity)
+top10 =  top10_data.sort_values("score", ascending=False).head(10)
 
 app = Flask(__name__)
 CORS(app)
@@ -71,51 +61,41 @@ def network_parameter():
 def network_graph():
     return render_template("railway_visualization/graph.html")
 
-# simulation modules
-@app.route("/simulation")
-def get_simulation_data():
-    data = {
-        "steps":list(range(len(infected))),
-        "infected":infected,
-        "infected_immunity": infected_immunity,
-        "infected_sis": sis_infected
-    }
-    return jsonify(data)
 
-@app.route("/simulation/multiple_simulation")
+
+# simulation modules
+@app.route("/simulation/multiple_simulation", methods=["POST"])
 def run_multiple_sim():
-    top10_nodes, counts = multiple_sim(g, initial_infected=[initial_station], immune_nodes=[])
+    source = request.get_json().get("source")
+    print(source)
+    top10_nodes, counts = multiple_sim(g, initial_infected=[source], immune_nodes=[])
     return jsonify({
         "top10_nodes": top10_nodes
     })
 
-@app.route("/simulation/SIRwith_immunity", methods=["POST"])
-def run_SIRwith_immunity():
-    nodes = request.json.get("immune_nodes", [])
-    res = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=nodes, steps=50)
+@app.route("/simulation/centrality_top10")
+def centrality_top10():
+    print(top10)
+    data = {
+        "name":top10["station_name"].tolist(),
+        "degree_centrality": top10["degree_centrality"].tolist(),
+        "betweenness_centrality": top10["betweenness_centrality"].tolist(),
+        "closeness_centrality": top10["closeness_centrality"].tolist(),
+        "score": top10["score"].tolist()
+    }
+    return jsonify(data)
 
-    infected_countA = infected_count(res)
-    return jsonify({
-        "infected_counts": infected_countA
-    })
-
-@app.route("/simulation/best_node")
+@app.route("/simulation/best_node", methods=["POST"])
 def get_best_node():
-    best_nodes = select_nodes(g, initial_infected=[initial_station], candidate_nodes=list(g.nodes), k=10, trials=5, steps=20)
+    source = request.get_json().get("source")
+    best_nodes = select_nodes(g, initial_infected=[source], candidate_nodes=list(g.nodes), k=10, trials=5, steps=20)
 
     return jsonify({
         "best_nodes": best_nodes
     })
 
-@app.route("/simulation/optimal_immunity", methods=["POST"])
-def run_optimal_simulation():
-    nodes = request.json.get("bests", [])
-    res = SIR_simulation(g, initial_infected=[initial_station], immune_nodes=nodes, steps=50)
-    
-    count = infected_count(res)
-    return jsonify({
-        "infected_count": count
-    })
+
+
 
 # network.html
 @app.route("/network-animation")
@@ -146,7 +126,6 @@ def network_simulation():
     print(result["links"][:10])
     return jsonify(result)
 
-
 @app.route("/nodes")
 def nodes():
     nodes = [{"id": node, "label":node} for node in g.nodes()]
@@ -154,11 +133,3 @@ def nodes():
 
 if __name__ == "__main__":      # localhost 5000
     app.run(debug=True)
-
-# 最尤ノードの選択　貪欲法　中心性の視覚化(統計図)　遅延駅10駅(毎度計算？)＋最尤10駅のリスト表示
-# シミュのアニメーション画面でどのノードを初期感染点にするかを選べるようにする
-# 遅延駅、未遅延駅のタイムステップごとのグラフを横(下)に表示
-
-"""
-中心性、平均パス長などの表示→レポート作成、社団構造の可視化
-"""

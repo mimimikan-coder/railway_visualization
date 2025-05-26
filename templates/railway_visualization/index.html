@@ -4,19 +4,45 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
     <title>Highspeed Railway visualization</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
     <!-- content -->
-    <h1>SIMULATION VISUALIZATION</h1>
-    <canvas id="myChart" width="400" height="200"></canvas>
-    <hr>
-    <button id="runSimulation">run simulation and list late 10 stations</button>
+    <div class="container">
+        <h1>Top 10 Centrality Stations</h1>
+        <div class="centrality-list">
+            <table id="centrality-table">
+                <thead>
+                    <tr>
+                        <th>Station Name</th>
+                        <th>Degree Centrality</th>
+                        <th>Betweenness Centrality</th>
+                        <th>Closeness Centrality</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <p id="error-message" style="color: red; display: none;"></p>
+        </div>
+    </div>
+    <label>
+        <div class="node-selector">
+            <h1>Multi Simulation Result</h1>
+            <label for="node-select">Select a Node:</label>
+            <select id="node-select" style="width: 400px;">
+                <option value="">-- Select a Node --</option>
+            </select>
+            <button id="runSimulation">run simulation and list late 10 stations</button>
+        </div>
+    </label>
+    
     <ul id="resultList"></ul>
-    <button id="SIRwithImmunity" disabled>Run SIR simulation with above 10 stations</button>
-    <button id="optimalImmunity">Run SIR simulation with best immunity nodes</button>
-
     <script src="{{ url_for('static', filename='index.js') }}"></script>
 </body>
 </html>

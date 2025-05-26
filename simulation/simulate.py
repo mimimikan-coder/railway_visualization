@@ -239,9 +239,11 @@ def multiple_sim(G, initial_infected, immune_nodes=[], beta=0.3, gamma=0.1, step
             gamma=gamma,
             steps=steps
         )
-
+        history = history["nodes"]
+        #print(history)
         for state in history:
-            for node, status in state.items():
+            node = state["name"]
+            for status in state["history"]:
                 if status == "I":
                     infection_count[node] += 1
 
@@ -269,7 +271,7 @@ def select_nodes(G, initial_infected, candidate_nodes, k=10, trials=20, steps=50
             total_infected = 0
 
             for trial in range(trials):
-                history = SIR_simulation(
+                result = SIR_simulation(
                     G,
                     initial_infected=initial_infected,
                     immune_nodes=trial_immune,
@@ -279,8 +281,8 @@ def select_nodes(G, initial_infected, candidate_nodes, k=10, trials=20, steps=50
                 )
 
                 total_infected += sum(
-                    sum(1 for status in step.values() if status == "I")
-                    for step in history
+                    sum(1 for status in state["history"] if status == "I")
+                    for state in result["nodes"]
                 )
 
             avg_infected = total_infected / trials

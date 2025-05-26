@@ -1,130 +1,93 @@
-let top10Nodes = [];
-let chart = null;
-
-fetch("http://localhost:5000/simulation")
+fetch("/simulation/centrality_top10")
     .then(response => response.json())
     .then(data => {
-        console.log(data);
-
-        const ctx = document.getElementById("myChart").getContext("2d");
-        chart = new Chart(ctx, {
-            type: "line",
-            data: {
-                labels: data.steps,
-                datasets: [{
-                    label: "no immunity",
-                    data: data.infected,
-                    borderColor: "rgba(255, 99, 132, 1)",
-                    backgroundColor: "rgba(255, 99, 132, 0.2)",
-                    borderWidth: 2,
-                    fill: false
-                },
-                {
-                    label: "with immunity",
-                    data: data.infected_immunity,
-                    borderColor: "rgba(54, 162, 235, 1)",
-                    backgroundColor: "rgba(54, 162, 235, 0.2)",
-                    borderWidth: 2,
-                    fill: false
-                },
-                {
-                    label: "sis infected",
-                    data: data.infected_sis,
-                    borderColor: "rgba(25, 250, 100, 1)",
-                    backgroundColor: "rgba(25, 250, 100, 0.2)",
-                    borderWidth: 2,
-                    fill: false
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    title: {
-                        display: true,
-                        text: "no/with immunity simulation"
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        })
-    })
-    .catch(error => console.error("Error fetching data", error));
-
-
-
-document.getElementById("runSimulation").addEventListener("click", () => {
-    fetch("http://localhost:5000/simulation/multiple_simulation")
-        .then(response => response.json())
-        .then(data => {
-            const resultList = document.getElementById("resultList");
-            resultList.innerHTML = "";
-
-            top10Nodes = data.top10_nodes;
-            top10Nodes.forEach((station, index) => {
-                const li = document.createElement("li");
-                li.textContent = `${index + 1}.${station}`;
-                resultList.appendChild(li);
-            });
-            document.getElementById("SIRwithImmunity").disabled = false;
+        const tableData = data.name.map((name, index) => ({
+            name,
+            degree: data.degree_centrality[index],
+            betweenness: data.betweenness_centrality[index],
+            closeness: data.closeness_centrality[index],
+            score: data.score[index]
+        }));
+        const tbody = document.querySelector('#centrality-table');
+        tableData.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                    <td>${row.name}</td>
+                    <td>${row.degree.toFixed(3)}</td>
+                    <td>${row.betweenness.toFixed(3)}</td>
+                    <td>${row.closeness.toFixed(3)}</td>
+                    <td>${row.score.toFixed(3)}</td>
+                `;
+            tbody.appendChild(tr);
         });
-    //.catch(error => console.error("Error running simulation: ", error));
+    })
+    .catch(error => {
+        console.error("Error: ", error);
+    });
 
-});
 
-// シミュで得た遅延駅を免疫にしてシミュ実行
-document.getElementById("SIRwithImmunity").addEventListener("click", () => {
-    fetch("http://localhost:5000/simulation/SIRwith_immunity", {
+document.getElementById("runSimulation").onclick = () => {
+    const source = document.getElementById("node-select").value;
+
+    fetch("/simulation/multiple_simulation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ immune_nodes: top10Nodes })
+        body: JSON.stringify({
+            source: source
+        })
     })
         .then(response => response.json())
         .then(data => {
-            updateChart(data.infected_counts, "simulation with TOP10 station");
+            console.log(data);
+            printTop10Nodes(data);
         });
-});
-
-// 最尤ノードでシミュ
-document.getElementById("optimalImmunity").addEventListener("click", () => {
-    console.log("clicked");
-
-    fetch("http://localhost:5000/simulation/best_node")
-        .then(response => response.json())
-        .then(data => {
-            const best_nodes = data.best_nodes;
-            console.log("Best nodes:", best_nodes);
-
-            return fetch("http://localhost:5000/simulation/optimal_immunity", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ bests: best_nodes })
-            });
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("simulation data:", data);
-            updateChart(data.infected_count, "simulation with best nodes", c = "rgba(10, 200, 180, 1)", bgc = "rgba(10, 200, 180, 0.2)");
-            document.getElementById("optimalImmunity").disabled = true;
-        })
-});
-
-// グラフ更新関数
-function updateChart(infectedCounts, title, c = "rgba(100, 25, 24, 1)", bgc = "rgba(100, 25, 24, 0.2)") {
-    if (!chart) {
-        console.error("not exist");
-        return;
-    }
-    chart.data.datasets.push({
-        label: title,
-        data: infectedCounts,
-        borderColor: c,
-        borderWidth: 2,
-        backgroundColor: bgc,
-        fill: false
+};
+function printTop10Nodes(data) {
+    const resultList = document.getElementById("resultList");
+    resultList.innerHTML = "";
+    top10Nodes = data.top10_nodes;
+    top10Nodes.forEach((station, index) => {
+        const li = document.createElement("li");
+        li.textContent = `${index + 1}.${station}`;
+        resultList.appendChild(li);
     });
-    chart.update();
 }
+
+// document.getElementById("optimalImmunity").addEventListener("click", () => {
+//     console.log("clicked");
+
+//     fetch("http://localhost:5000/simulation/best_node")
+//         .then(response => response.json())
+//         .then(data => {
+//             const best_nodes = data.best_nodes;
+//             console.log("Best nodes:", best_nodes);
+
+//             return fetch("http://localhost:5000/simulation/optimal_immunity", {
+//                 method: "POST",
+//                 headers: { "Content-Type": "application/json" },
+//                 body: JSON.stringify({ bests: best_nodes })
+//             });
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             console.log("simulation data:", data);
+//             updateChart(data.infected_count, "simulation with best nodes", c = "rgba(10, 200, 180, 1)", bgc = "rgba(10, 200, 180, 0.2)");
+//             document.getElementById("optimalImmunity").disabled = true;
+//         })
+// });
+
+fetch('/nodes')
+    .then(response => response.json())
+    .then(nodes => {
+        const select = document.getElementById('node-select');
+        nodes.forEach(node => {
+            const option = document.createElement('option');
+            option.value = node.id;
+            option.textContent = node.label;
+            select.appendChild(option);
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('node-select').innerHTML = '<option>Error</option>';
+    });

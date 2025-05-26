@@ -36,13 +36,7 @@ function drawNetworkAnimation(data) {
   const maxStep = history.length;
   stepSlider.max = maxStep - 1;
 
-  // const simulation = d3.forceSimulation(data.nodes)
-  //   .force("link", d3.forceLink(links).id(d => d.id).distance(40))
-  //   .force("charge", d3.forceManyBody().strength(-100))
-  //   .force("center", [400, 300])
-  //   .force("collide", d3.forceCollide(10))
-  //   .alpha(1)
-  //   .alphaDecay(0.03);
+
 
   const link = g.selectAll("line")
     .data(data.links)
@@ -86,21 +80,6 @@ function drawNetworkAnimation(data) {
 
   node.append("title").text(d => d.id);
 
-  // simulation.on("tick", () => {
-  //   link
-  //     .attr("x1", d => d.source.x)
-  //     .attr("y1", d => d.source.y)
-  //     .attr("x2", d => d.target.x)
-  //     .attr("y2", d => d.target.y);
-  //   node
-  //     .attr("cx", d => d.x)
-  //     .attr("cy", d => d.y);
-  // });
-
-  // svg.call(d3.zoom().on("zoom", function (event) {
-  //   svg.selectAll("g").attr("transform", event.transform);
-  // }));
-
   let step = 0;
   let interval;
 
@@ -134,22 +113,6 @@ function drawNetworkAnimation(data) {
 
   update(0);
 
-  // function dragstarted(event, d) {
-  //   if (!event.active) simulation.alphaTarget(0.3).restart();
-  //   d.fx = d.x;
-  //   d.fy = d.y;
-  // }
-
-  // function dragged(event, d) {
-  //   d.fx = event.x;
-  //   d.fy = event.y;
-  // }
-
-  // function dragended(event, d) {
-  //   if (!event.active) simulation.alphaTarget(0);
-  //   d.fx = null;
-  //   d.fy = null;
-  // }
 }
 
 fetch('/nodes')
@@ -172,4 +135,11 @@ document.getElementById('node-select').addEventListener('change', (event) => {
   const selectedNode = event.target.value;
   document.getElementById('selected-node').textContent = selectedNode || 'None';
   console.log('Selected:', selectedNode);
+});
+
+$(document).ready(function() {
+  $('#node-select').select2({
+    placeholder: "search",
+    allowClear: true
+  });
 });

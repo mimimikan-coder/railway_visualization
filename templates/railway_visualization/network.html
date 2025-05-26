@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -39,7 +42,7 @@
     <label>
         <div class="node-selector">
             <label for="node-select">Select a Node:</label>
-            <select id="node-select">
+            <select id="node-select" style="width: 400px;">
                 <option value="">-- Select a Node --</option>
             </select>
             <p>Selected Node: <span id="selected-node">None</span></p>

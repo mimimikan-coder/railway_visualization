@@ -1,16 +1,3 @@
-100回シミュによる遅延回数Top10駅
-['Xianningbei Railway Station',
- 'Langfang Railway Station',
-  'Taian Railway Station', 
-  'Wulongbeidong Railway Station',
-   'Qishan Railway Station',
-    'Qiqihaernan Railway Station', 
-    'Sipingdong Railway Station', 
-    'Fuyuanbei Railway Station', 
-    'Shanhaiguan Railway Station', 
-    'Zhengdingjichang Railway Station']
-こいつは結構バラつくので↓のがいい？
-
 
 中心性のスコアによる中心駅Top10
 164        Xianbei Railway Station           0.032659                0.091101
@@ -25,3 +12,61 @@
 2      Changshanan Railway Station           0.052877                0.326650
 
 network.py, data_transport.py 不必要？
+
+high degree stations
+0
+['Hangzhoudong Railway Station', 'Nanchangxi Railway Station', 'Shangrao Railway Station', 'Lishui Railway Station', 'Fuzhou Railway Station', 'Wenzhounan Railway Station', 'Yiwu Railway Station', 'Nanpingshi Railway Station', 'Yingtanbei Railway Station', 'Jinhua Railway Station']
+1
+['Changshanan Railway Station', 'Guangzhounan Railway Station', 'Guiyangbei Railway Station', 'Zhongqingxi Railway Station', 'Huaihuanan Railway Station', 'Guiyangdong Railway Station', 'Hengyangdong Railway Station', 'Guilinbei Railway Station', 'Zunyi Railway Station', 'Loudinan Railway Station']
+2
+['Nanjingnan Railway Station', 'Shenyangbei Railway Station', 'Shenyang Railway Station', 'Xuzhoudong Railway Station', 'Hefeinan Railway Station', 'Tianjinxi Railway Station', 'Jinanxi Railway Station', 'Yingkoudong Railway Station', 'Fuyangxi Railway Station', 'Taian Railway Station']
+3
+['Xianbei Railway Station', 'Chengdudong Railway Station', 'Zhongqingbei Railway Station', 'Longchangbei Railway Station', 'Neijiangbei Railway Station', 'Dazunan Railway Station', 'Ziyangbei Railway Station', 'Rongchangbei Railway Station', 'Mianyang Railway Station', 'Yongchuandong Railway Station']
+4
+['Zhengzhoudong Railway Station', 'Wuhan Railway Station', 'Xinyangdong Railway Station', 'Yueyangdong Railway Station', 'Zhengzhou Railway Station', 'Luoyanglongmen Railway Station', 'Jiujiang Railway Station', 'Minchinan Railway Station', 'Zhumadianxi Railway Station', 'Tahexi Railway Station']
+5
+['Haerbin Railway Station', 'Changchunxi Railway Station', 'Haerbinxi Railway Station', 'Sipingdong Railway Station', 'Changchun Railway Station', 'Changtuxi Railway Station', 'Tielingxi Railway Station', 'Kaiyuanxi Railway Station', 'Daqingdong Railway Station', 'Yabulixi Railway Station']
+6
+['Weifangbei Railway Station', 'Weifang Railway Station', 'Qingdaobei Railway Station', 'Laiyang Railway Station', 'Gaomibei Railway Station', 'Gaomi Railway Station', 'Haiyangbei Railway Station', 'Jimobei Railway Station', 'Jiaozhoubei Railway Station', 'Qingdaoxi Railway Station']
+7
+['Chaoshan Railway Station', 'Futian Railway Station', 'Shenzhenbei Railway Station', 'Huizhounan Railway Station', 'Shamenbei Railway Station', 'Zhangzhou Railway Station', 'Quanzhou Railway Station', 'Shanwei Railway Station', 'Puning Railway Station', 'Nanjing Railway Station']
+8
+['Shijiazhuang Railway Station', 'Baodingdong Railway Station', 'Linfenxi Railway Station', 'Taiyuannan Railway Station', 'Beijingxi Railway Station', 'Baiyangdian Railway Station', 'Xingtaidong Railway Station', 'Zhengdingjichang Railway Station', 'Dingzhoudong Railway Station', 'Anyangdong Railway Station']
+9
+['Shanghaihongqiao Railway Station', 'Kunshannan Railway Station', 'Suzhou Railway Station', 'Shanghai Railway Station', 'Wuxi Railway Station', 'Changzhou Railway Station', 'Wuxidong Railway Station', 'Tongxiang Railway Station', 'Zhenjiang Railway Station', 'Jiaxingnan Railway Station']
+10
+['Shangqiu Railway Station', 'Minquanbei Railway Station', 'Yongchengbei Railway Station', 'Xiaoxianbei Railway Station', 'Dangshannan Railway Station', 'Lankaonan Railway Station', 'Bozhounan Railway Station', 'Kaifengbei Railway Station', 'Huaibei Railway Station', 'Shangqiudong Railway Station']
+11
+['Xingguoxi Railway Station', 'Changtingnan Railway Station', 'Ruijin Railway Station', 'Huichangbei Railway Station', 'Gutianhuizhi Railway Station', 'Guanzhishan Railway Station', 'Ganxianbei Railway Station', 'Wananxian Railway Station', 'Taihe Railway Station', 'Yudu Railway Station']
+12
+['Wuhu Railway Station', 'Tongling Railway Station', 'Maanshandong Railway Station', 'Yijiang Railway Station', 'Fanchangxi Railway Station', 'Jiangningxi Railway Station', 'Dangtudong Railway Station', 'Chizhou Railway Station', 'Anqing Railway Station']   
+13
+['Zhaoyang Railway Station', 'Niuheliang Railway Station', 'Chengdexianbei Railway Sta 'Dangtudong Railway Station', 'Chizhou Railway Station', 'Anqing Railway Station']   
+13
+ 'Dangtudong Railway Station', 'Chizhou Railway Station', 'Anqing Railway Station']   
+ 'Dangtudong Railway Station', 'Chizhou Railway Station', 'Anqing Railway Station']   
+13
+['Zhaoyang Railway Station', 'Niuheliang Railway Station', 'Chengdexianbei Railway Station', 'Kazuo Railway Station', 'Pingquanbei Railway Station', 'Nailingao Railway Station', 'Chengdenan Railway Station', 'Beipiao Railway Station']
+14
+['Maoming Railway Station', 'Xinhui Railway Station', 'Yangjiang Railway Station', 'Zhanjiangxi Railway Station']
+15
+['Dagushan Railway Station', 'Qingdui Railway Station', 'Zhuanghebei Railway Station']
+
+low degree stations
+0
+['Yongjia Railway Station', 'Xiajiang Railway Station', 'Xiapu Railway Station', 'Zhuangqiao Railway Station', 'Jishuixi Railway Station', 'Nancheng Railway Station', 'Taimushan Railway Station', 'Jianningxianbei Railway Station', 'Donggangbei Railway Station', 'Jiangle Railway Station']
+1
+['Yuxi Railway Station', 'Zhuhai Railway Station', 'Huaiji Railway Station', 'Nanning Railway Station', 'Changning Railway Station', 'Sanshuinan Railway Station', 'Yunfudong Railway Station', 'Yibinxi Railway Station', 'Congjiang Railway Station', 'Songming Railway Station']
+2                                                                                    tation', 'Quanjiao Railway Station']nliangchengbei Railway Station', 'Luanhe Railway St
+3                                                                                    i Railway Station']n', 'Enshi Railway Station', 'Xindudong Railway Station', 'Fulingbei
+['Taihedong Railway Station', 'Guchengdong Railway Station', 'Huaibeibei Railway Station', 'Lumiao Railway Station', 'Shangqiudong Railway Station', 'Huaibei Railway Station', 'Kaifengbei Railway Station', 'Bozhounan Railway Station', 'Yongchengbei Railway Station', 'Lankaonan Railway Station']
+11
+['Taihe Railway Station', 'Wananxian Railway Station', 'Ruijin Railway Station', 'Ganxianbei Railway Station', 'Guanzhishan Railway Station', 'Huichangbei Railway Station', 'Gutianhuizhi Railway Station', 'Yudu Railway Station', 'Changtingnan Railway Station', 'Xingguoxi Railway Station']
+12
+['Anqing Railway Station', 'Chizhou Railway Station', 'Dangtudong Railway Station', 'Jiangningxi Railway Station', 'Fanchangxi Railway Station', 'Yijiang Railway Station', 'Maanshandong Railway Station', 'Wuhu Railway Station', 'Tongling Railway Station']   
+13
+['Beipiao Railway Station', 'Pingquanbei Railway Station', 'Nailingao Railway Station', 'Chengdenan Railway Station', 'Chengdexianbei Railway Station', 'Kazuo Railway Station', 'Niuheliang Railway Station', 'Zhaoyang Railway Station']
+14
+['Zhanjiangxi Railway Station', 'Yangjiang Railway Station', 'Maoming Railway Station', 'Xinhui Railway Station']
+15
+['Zhuanghebei Railway Station', 'Qingdui Railway Station', 'Dagushan Railway Station']

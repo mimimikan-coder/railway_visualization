@@ -5,6 +5,7 @@ import pandas as pd
 import networkx as nx
 from simulation.simulate import *
 import json
+from networkx.algorithms.community import greedy_modularity_communities
 
 # read CSV
 script_dir = os.path.dirname(__file__)
@@ -31,8 +32,26 @@ g = nx.Graph()
 for _, row in distance_data.iterrows():
     g.add_edge(row["from_station"], row["to_station"], weight=row["mileage"])
 
-initial_station = "Yimianpobei Railway Station"
-SIR_simulation_network(g, initial_infected=[initial_station], immune_nodes=[])
+
+communities = list(greedy_modularity_communities(g))
+degree_centrality = nx.degree_centrality(g)
+results = []
+
+for i, community in enumerate(communities):
+    community_nodes = list(community)
+    sorted_nodes = sorted(
+        community_nodes,
+        key= lambda node: degree_centrality[node]
+    )
+    top_nodes = sorted_nodes[:10]
+    results.append(top_nodes)
+
+for i, result in enumerate(results):
+    print(i)
+    print(result)
+
+# initial_station = "Yimianpobei Railway Station"
+# SIR_simulation_network(g, initial_infected=[initial_station], immune_nodes=[])
 
 # layout = nx.spring_layout(g, seed=42)
 
